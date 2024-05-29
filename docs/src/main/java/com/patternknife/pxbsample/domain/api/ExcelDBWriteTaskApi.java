@@ -2,7 +2,7 @@ package com.patternknife.pxbsample.domain.api;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.patternknife.pxb.domain.exceldbcommontask.dto.ExcelDBCommonTaskResDTO;
+import com.patternknife.pxb.domain.excelcommontask.dto.ExcelCommonTaskResDTO;
 import com.patternknife.pxb.domain.exceldbwritetask.service.ExcelDBWriteTaskService;
 import com.patternknife.pxb.util.CommonConstant;
 import com.patternknife.pxbsample.config.response.GlobalSuccessPayload;
@@ -24,13 +24,13 @@ public class ExcelDBWriteTaskApi {
 
     @PreAuthorize("@authorityService.hasRole('DB_WRITE_ADMIN')")
     @GetMapping("/excel-db-write-tasks")
-    public GlobalSuccessPayload<Page<ExcelDBCommonTaskResDTO.OneRes>> getExcelDBWriteTasks(@RequestParam(value = "skipPagination", required = false, defaultValue = "false") final Boolean skipPagination,
-                                                                                           @RequestParam(value = "pageNum", required = false, defaultValue = CommonConstant.COMMON_PAGE_NUM) final Integer pageNum,
-                                                                                           @RequestParam(value = "pageSize", required = false, defaultValue = CommonConstant.COMMON_PAGE_SIZE) final Integer pageSize,
-                                                                                           @RequestParam(value = "excelDBWriteTaskSearchFilter", required = false) final String excelDBWriteTaskSearchFilter,
-                                                                                           @RequestParam(value = "sorterValueFilter", required = false) final String sorterValueFilter,
-                                                                                           @RequestParam(value = "dateRangeFilter", required = false) String dateRangeFilter,
-                                                                                           @RequestParam(value = "groupId", required = false) Long groupId)
+    public GlobalSuccessPayload<Page<ExcelCommonTaskResDTO.OneRes>> getExcelDBWriteTasks(@RequestParam(value = "skipPagination", required = false, defaultValue = "false") final Boolean skipPagination,
+                                                                                         @RequestParam(value = "pageNum", required = false, defaultValue = CommonConstant.COMMON_PAGE_NUM) final Integer pageNum,
+                                                                                         @RequestParam(value = "pageSize", required = false, defaultValue = CommonConstant.COMMON_PAGE_SIZE) final Integer pageSize,
+                                                                                         @RequestParam(value = "excelDBWriteTaskSearchFilter", required = false) final String excelDBWriteTaskSearchFilter,
+                                                                                         @RequestParam(value = "sorterValueFilter", required = false) final String sorterValueFilter,
+                                                                                         @RequestParam(value = "dateRangeFilter", required = false) String dateRangeFilter,
+                                                                                         @RequestParam(value = "groupId", required = false) Long groupId)
             throws ResourceNotFoundException, JsonProcessingException {
         return new GlobalSuccessPayload<>(excelDBWriteTaskService.findExcelDBWriteTasks(skipPagination, pageNum, pageSize,
                 excelDBWriteTaskSearchFilter, sorterValueFilter, dateRangeFilter, groupId));
@@ -39,14 +39,14 @@ public class ExcelDBWriteTaskApi {
 
     @PreAuthorize("@authorityService.hasRole('DB_READ_ADMIN')")
     @GetMapping("/excel-db-write-tasks/counts-by-status")
-    public GlobalSuccessPayload<ExcelDBCommonTaskResDTO.StatusRes> getExcelDBWriteTaskCountsByStatus(@RequestParam(value = "groupId", required = false) Long groupId)
+    public GlobalSuccessPayload<ExcelCommonTaskResDTO.StatusRes> getExcelDBWriteTaskCountsByStatus(@RequestParam(value = "groupId", required = false) Long groupId)
             throws ResourceNotFoundException {
         return new GlobalSuccessPayload<>(excelDBWriteTaskService.findExcelDBWriteTaskCountsByStatus(groupId));
     }
 
     @PreAuthorize("@authorityService.hasRole('DB_READ_ADMIN')")
     @GetMapping("/excel-db-write-tasks/start-end-times")
-    public GlobalSuccessPayload<ExcelDBCommonTaskResDTO.StartEndTimestampRes> getExcelDBWriteTaskTimeStamps(@RequestParam(value = "groupId", required = false) Long groupId)
+    public GlobalSuccessPayload<ExcelCommonTaskResDTO.StartEndTimestampRes> getExcelDBWriteTaskTimeStamps(@RequestParam(value = "groupId", required = false) Long groupId)
             throws ResourceNotFoundException {
         return new GlobalSuccessPayload<>(excelDBWriteTaskService.findExcelDBWriteTaskStartEndTimestamps(groupId));
     }

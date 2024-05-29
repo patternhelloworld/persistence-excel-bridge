@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternknife.pxb.config.response.error.exception.data.ResourceNotFoundException;
 import com.patternknife.pxb.domain.common.dto.DateRangeFilter;
 import com.patternknife.pxb.domain.common.dto.SorterValueFilter;
-import com.patternknife.pxb.domain.exceldbcommontask.dto.ExcelDBCommonTaskResDTO;
-import com.patternknife.pxb.domain.exceldbcommontask.dto.QExcelDBCommonTaskResDTO_OneRes;
-import com.patternknife.pxb.domain.exceldbcommontask.dto.QExcelDBCommonTaskResDTO_StartEndTimestampRes;
+import com.patternknife.pxb.domain.excelcommontask.dto.ExcelCommonTaskResDTO;
+import com.patternknife.pxb.domain.excelcommontask.dto.QExcelCommonTaskResDTO_OneRes;
+import com.patternknife.pxb.domain.excelcommontask.dto.QExcelCommonTaskResDTO_StartEndTimestampRes;
 import com.patternknife.pxb.domain.exceldbwritetask.dto.ExcelDBWriteTaskSearchFilter;
 import com.patternknife.pxb.domain.exceldbwritetask.entity.ExcelDBWriteTask;
 import com.patternknife.pxb.domain.exceldbwritetask.entity.QExcelDBWriteTask;
@@ -61,17 +61,17 @@ public class ExcelDBWriteTaskRepositorySupport extends QuerydslRepositorySupport
 
 
     @Transactional( readOnly = true)
-    public Page<ExcelDBCommonTaskResDTO.OneRes> findExcelDBWriteTasksByPageAndFilterAndGroupId(Boolean skipPagination,
-                                                                                               Integer pageNum,
-                                                                                               Integer pageSize,
-                                                                                               String excelDBWriteTaskSearchFilter,
-                                                                                               String sorterValueFilter,
-                                                                                               String dateRangeFilter, Long groupId) throws JsonProcessingException, ResourceNotFoundException {
+    public Page<ExcelCommonTaskResDTO.OneRes> findExcelDBWriteTasksByPageAndFilterAndGroupId(Boolean skipPagination,
+                                                                                             Integer pageNum,
+                                                                                             Integer pageSize,
+                                                                                             String excelDBWriteTaskSearchFilter,
+                                                                                             String sorterValueFilter,
+                                                                                             String dateRangeFilter, Long groupId) throws JsonProcessingException, ResourceNotFoundException {
 
         final QExcelDBWriteTask qExcelDBWriteTask = QExcelDBWriteTask.excelDBWriteTask;
 
-        JPQLQuery<ExcelDBCommonTaskResDTO.OneRes> query = jpaQueryFactory
-                .select(new QExcelDBCommonTaskResDTO_OneRes(qExcelDBWriteTask.id, qExcelDBWriteTask.groupId,
+        JPQLQuery<ExcelCommonTaskResDTO.OneRes> query = jpaQueryFactory
+                .select(new QExcelCommonTaskResDTO_OneRes(qExcelDBWriteTask.id, qExcelDBWriteTask.groupId,
                         qExcelDBWriteTask.startRow, qExcelDBWriteTask.endRow, qExcelDBWriteTask.description,
                         qExcelDBWriteTask.status, qExcelDBWriteTask.errorMessage, qExcelDBWriteTask.errorCount,
                         qExcelDBWriteTask.createdAt, qExcelDBWriteTask.updatedAt))
@@ -182,8 +182,8 @@ public class ExcelDBWriteTaskRepositorySupport extends QuerydslRepositorySupport
 
 
     @Transactional( readOnly = true)
-    public ExcelDBCommonTaskResDTO.StatusRes findExcelDBWriteTaskCountsByStatus(Long groupId) throws ResourceNotFoundException {
-        return new ExcelDBCommonTaskResDTO.StatusRes(
+    public ExcelCommonTaskResDTO.StatusRes findExcelDBWriteTaskCountsByStatus(Long groupId) throws ResourceNotFoundException {
+        return new ExcelCommonTaskResDTO.StatusRes(
                 excelDBWriteTaskRepository.countByStatusAndGroupId(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.SUCCESS.getValue(), groupId),
                 excelDBWriteTaskRepository.countByStatusAndGroupId(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.FAILURE.getValue(), groupId),
                 excelDBWriteTaskRepository.countByStatusAndGroupId(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue(), groupId),
@@ -196,11 +196,11 @@ public class ExcelDBWriteTaskRepositorySupport extends QuerydslRepositorySupport
 
 
     @Transactional( readOnly = true)
-    public ExcelDBCommonTaskResDTO.StartEndTimestampRes findStartEndTimestampsByGroupId(Long groupId){
+    public ExcelCommonTaskResDTO.StartEndTimestampRes findStartEndTimestampsByGroupId(Long groupId){
         final QExcelDBWriteTask qExcelDBWriteTask = QExcelDBWriteTask.excelDBWriteTask;
 
-        JPQLQuery<ExcelDBCommonTaskResDTO.StartEndTimestampRes> query = jpaQueryFactory
-                .select(new QExcelDBCommonTaskResDTO_StartEndTimestampRes(qExcelDBWriteTask.createdAt.min(), qExcelDBWriteTask.updatedAt.max()))
+        JPQLQuery<ExcelCommonTaskResDTO.StartEndTimestampRes> query = jpaQueryFactory
+                .select(new QExcelCommonTaskResDTO_StartEndTimestampRes(qExcelDBWriteTask.createdAt.min(), qExcelDBWriteTask.updatedAt.max()))
                 .from(qExcelDBWriteTask).where(qExcelDBWriteTask.groupId.eq(groupId));
 
         return query.fetchOne();

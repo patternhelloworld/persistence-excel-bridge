@@ -1,4 +1,4 @@
-package com.patternknife.pxb.domain.exceldbcommontask.dto;
+package com.patternknife.pxb.domain.excelcommontask.dto;
 
 import com.patternknife.pxb.domain.exceldbreadtask.entity.ExcelDBReadTask;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -8,7 +8,7 @@ import lombok.Getter;
 
 import java.sql.Timestamp;
 
-public class ExcelDBCommonTaskResDTO {
+public class ExcelCommonTaskResDTO {
 
     @Getter
     public static class CreateOrUpdateRes {

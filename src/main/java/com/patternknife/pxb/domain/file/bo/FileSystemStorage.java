@@ -6,9 +6,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public interface IFileSystemStorage {
+public interface FileSystemStorage {
 
-    String saveFile(MultipartFile file) throws IOException;
+    void saveFile(MultipartFile file, String fileNameWithoutExt) throws IOException;
 
     Resource loadFile(String fileName) throws FileNotFoundException;
+
 }

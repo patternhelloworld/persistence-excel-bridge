@@ -26,20 +26,7 @@ public class ExcelGroupTaskBO {
             }
             return workbook;
         }
-
-    }
-
-    public int getRowCountFromResource(Resource resource) throws IOException {
-
-        Workbook workbook = getWorkbookFromResource(resource);
-
-        // Assuming the data is in the first sheet
-        Sheet sheet = workbook.getSheetAt(0);
-        int rowCount = sheet.getPhysicalNumberOfRows(); // This will give you the number of rows that are actually filled with data
-
-        workbook.close(); // Always close the workbook when you're done
-        return rowCount;
-
+        // Only the InputStream is closed, which doesn't mean the workbook is closed
     }
 
     public int getRowCountFromWorkbook(Workbook workbook) throws IOException {
@@ -52,5 +39,6 @@ public class ExcelGroupTaskBO {
         return rowCount;
 
     }
+
 
 }

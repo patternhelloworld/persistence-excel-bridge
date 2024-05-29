@@ -1,7 +1,7 @@
 package com.patternknife.pxbsample.domain.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.patternknife.pxb.domain.exceldbcommontask.dto.ExcelDBCommonTaskResDTO;
+import com.patternknife.pxb.domain.excelcommontask.dto.ExcelCommonTaskResDTO;
 import com.patternknife.pxb.domain.exceldbreadtask.service.ExcelDBReadTaskService;
 import com.patternknife.pxb.util.CommonConstant;
 import com.patternknife.pxbsample.config.response.GlobalSuccessPayload;
@@ -24,13 +24,13 @@ public class ExcelDBReadTaskApi {
 
     @PreAuthorize("@authorityService.hasRole('DB_READ_ADMIN')")
     @GetMapping("/excel-db-read-tasks")
-    public GlobalSuccessPayload<Page<ExcelDBCommonTaskResDTO.OneRes>> getExcelDBReadTasks(@RequestParam(value = "skipPagination", required = false, defaultValue = "false") final Boolean skipPagination,
-                                                                                          @RequestParam(value = "pageNum", required = false, defaultValue = CommonConstant.COMMON_PAGE_NUM) final Integer pageNum,
-                                                                                          @RequestParam(value = "pageSize", required = false, defaultValue = CommonConstant.COMMON_PAGE_SIZE) final Integer pageSize,
-                                                                                          @RequestParam(value = "excelDBReadTaskSearchFilter", required = false) final String excelDBReadTaskSearchFilter,
-                                                                                          @RequestParam(value = "sorterValueFilter", required = false) final String sorterValueFilter,
-                                                                                          @RequestParam(value = "dateRangeFilter", required = false) String dateRangeFilter,
-                                                                                          @RequestParam(value = "groupId", required = false) Long groupId)
+    public GlobalSuccessPayload<Page<ExcelCommonTaskResDTO.OneRes>> getExcelDBReadTasks(@RequestParam(value = "skipPagination", required = false, defaultValue = "false") final Boolean skipPagination,
+                                                                                        @RequestParam(value = "pageNum", required = false, defaultValue = CommonConstant.COMMON_PAGE_NUM) final Integer pageNum,
+                                                                                        @RequestParam(value = "pageSize", required = false, defaultValue = CommonConstant.COMMON_PAGE_SIZE) final Integer pageSize,
+                                                                                        @RequestParam(value = "excelDBReadTaskSearchFilter", required = false) final String excelDBReadTaskSearchFilter,
+                                                                                        @RequestParam(value = "sorterValueFilter", required = false) final String sorterValueFilter,
+                                                                                        @RequestParam(value = "dateRangeFilter", required = false) String dateRangeFilter,
+                                                                                        @RequestParam(value = "groupId", required = false) Long groupId)
             throws ResourceNotFoundException, JsonProcessingException {
         return new GlobalSuccessPayload<>(excelDBReadTaskService.findExcelDBReadTasks(skipPagination, pageNum, pageSize,
                 excelDBReadTaskSearchFilter, sorterValueFilter, dateRangeFilter, groupId));
@@ -38,14 +38,14 @@ public class ExcelDBReadTaskApi {
 
     @PreAuthorize("@authorityService.hasRole('DB_READ_ADMIN')")
     @GetMapping("/excel-db-read-tasks/counts-by-status")
-    public GlobalSuccessPayload<ExcelDBCommonTaskResDTO.StatusRes> getExcelDBReadTaskCountsByStatus(@RequestParam(value = "groupId", required = false) Long groupId)
+    public GlobalSuccessPayload<ExcelCommonTaskResDTO.StatusRes> getExcelDBReadTaskCountsByStatus(@RequestParam(value = "groupId", required = false) Long groupId)
             throws ResourceNotFoundException {
         return new GlobalSuccessPayload<>(excelDBReadTaskService.findExcelDBReadTaskCountsByStatus(groupId));
     }
 
     @PreAuthorize("@authorityService.hasRole('DB_READ_ADMIN')")
     @GetMapping("/excel-db-read-tasks/start-end-times")
-    public GlobalSuccessPayload<ExcelDBCommonTaskResDTO.StartEndTimestampRes> getExcelDBReadTaskTimeStamps(@RequestParam(value = "groupId", required = false) Long groupId)
+    public GlobalSuccessPayload<ExcelCommonTaskResDTO.StartEndTimestampRes> getExcelDBReadTaskTimeStamps(@RequestParam(value = "groupId", required = false) Long groupId)
             throws ResourceNotFoundException {
         return new GlobalSuccessPayload<>(excelDBReadTaskService.findExcelDBReadTaskStartEndTimestamps(groupId));
     }

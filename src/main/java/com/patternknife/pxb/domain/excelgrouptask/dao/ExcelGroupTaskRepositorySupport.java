@@ -13,7 +13,7 @@ import com.patternknife.pxb.domain.excelgrouptask.dto.QExcelGroupTaskResDTO_OneR
 import com.patternknife.pxb.domain.excelgrouptask.entity.ExcelGroupTask;
 import com.patternknife.pxb.domain.excelgrouptask.entity.QExcelGroupTask;
 import com.patternknife.pxb.domain.excelgrouptask.enums.ExcelGroupTaskStatusConst;
-import com.patternknife.pxb.domain.file.bo.ExcelFileBO;
+import com.patternknife.pxb.domain.file.bo.ExcelGroupTaskFileBO;
 import com.patternknife.pxb.util.CustomUtils;
 import com.patternknife.pxb.util.PaginationUtil;
 import com.querydsl.core.BooleanBuilder;
@@ -35,15 +35,15 @@ public class ExcelGroupTaskRepositorySupport extends QuerydslRepositorySupport {
     private final ExcelGroupTaskRepository excelGroupTaskRepository;
 
 
-    private final ExcelFileBO excelFileBO;
+    private final ExcelGroupTaskFileBO excelGroupTaskFileBO;
 
     public ExcelGroupTaskRepositorySupport(JPAQueryFactory jpaQueryFactory, ExcelGroupTaskRepository excelGroupTaskRepository,
-                                           ExcelFileBO excelFileBO) {
+                                           ExcelGroupTaskFileBO excelGroupTaskFileBO) {
 
         super(ExcelGroupTask.class);
         this.excelGroupTaskRepository = excelGroupTaskRepository;
         this.jpaQueryFactory = jpaQueryFactory;
-        this.excelFileBO = excelFileBO;
+        this.excelGroupTaskFileBO = excelGroupTaskFileBO;
     }
 
 
@@ -316,7 +316,7 @@ public class ExcelGroupTaskRepositorySupport extends QuerydslRepositorySupport {
         return resultPage.map(item -> {
             try {
 
-                item.setCurrentFileSize(excelFileBO.getFileSizeExcelGroupTaskExcelForDBRead(item.getId(), item.getSavedFileExt()));
+                item.setCurrentFileSize(excelGroupTaskFileBO.getFileSizeExcelGroupTaskExcelForDBRead(item.getId(), item.getSavedFileExt()));
             } catch (IOException e) {
                 item.setCurrentFileSize(0L);
             }

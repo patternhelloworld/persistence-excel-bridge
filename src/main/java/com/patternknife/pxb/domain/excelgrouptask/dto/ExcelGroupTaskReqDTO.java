@@ -102,6 +102,9 @@ public class ExcelGroupTaskReqDTO {
         @NotNull(message = "ID cannot be empty.")
         private Long id;
 
+        public DBReadGroupTaskCreateReq(Long id) {
+            this.id = id;
+        }
     }
 
 

@@ -1,6 +1,7 @@
 package com.patternknife.pxb.domain.exceldbprocessor.processor;
 
 import com.patternknife.pxb.domain.exceldbprocessor.cache.IExcelDBReadInMemoryData;
+import com.patternknife.pxb.domain.exceldbprocessor.maxid.ExcelDBMaxIdRes;
 import com.patternknife.pxb.domain.exceldbreadtask.queue.ExcelDBReadTaskEventDomain;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -13,7 +14,7 @@ public interface ExcelDBReadProcessor extends ExcelDBProcessor {
     /*
     *  To get metadata such as maxId for "read"
     * */
-    Page<?> snapshotDBRead(int pageSize) throws Exception;
+    Page<? extends ExcelDBMaxIdRes> snapshotDBRead(int pageSize) throws Exception;
 
     void cacheDBReadToInMemory(ExcelDBReadTaskEventDomain excelDBReadTaskEventDomain, IExcelDBReadInMemoryData excelDBReadInMemoryData) throws Exception;
 
