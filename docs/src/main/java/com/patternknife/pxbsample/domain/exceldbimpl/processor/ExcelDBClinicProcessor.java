@@ -7,7 +7,7 @@ import com.patternknife.pxb.domain.exceldbprocessor.maxid.MaxIdBasedExcelDBProce
 import com.patternknife.pxb.domain.exceldbprocessor.processor.ExcelDBReadProcessor;
 import com.patternknife.pxb.domain.exceldbprocessor.processor.ExcelDBWriteProcessor;
 import com.patternknife.pxb.domain.exceldbreadtask.queue.ExcelDBReadTaskEventDomain;
-import com.patternknife.pxb.domain.file.bo.ExcelFileBO;
+import com.patternknife.pxb.domain.file.bo.ExcelGroupTaskFileBO;
 import com.patternknife.pxbsample.config.response.error.exception.data.PreconditionFailedException;
 import com.patternknife.pxbsample.domain.clinic.dao.ClinicRepositorySupport;
 import com.patternknife.pxbsample.domain.clinic.dto.ClinicResDTO;
@@ -33,9 +33,9 @@ public class ExcelDBClinicProcessor extends MaxIdBasedExcelDBProcessor
         implements ExcelDBReadProcessor, ExcelDBWriteProcessor {
 
     private final ClinicRepositorySupport clinicRepositorySupport;
-    private final ExcelFileBO fileBO;
+    private final ExcelGroupTaskFileBO fileBO;
 
-    public ExcelDBClinicProcessor(ClinicRepositorySupport clinicRepositorySupport, ExcelFileBO fileBO) throws IOException {
+    public ExcelDBClinicProcessor(ClinicRepositorySupport clinicRepositorySupport, ExcelGroupTaskFileBO fileBO) throws IOException {
         super();
         this.clinicRepositorySupport = clinicRepositorySupport;
         this.fileBO = fileBO;
@@ -43,7 +43,7 @@ public class ExcelDBClinicProcessor extends MaxIdBasedExcelDBProcessor
     }
 
     @Override
-    public Page<?> snapshotDBRead(int pageSize) throws JsonProcessingException {
+    public Page<ClinicResDTO.OneDetails> snapshotDBRead(int pageSize) throws JsonProcessingException {
         return clinicRepositorySupport.findDetailsByPageAndFilter(false, 1 ,pageSize, null, serializedSorterValueFilter, null);
     }
 

@@ -12,37 +12,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 
 /*
 *
 * */
-public class FileSystemStorageImpl implements IFileSystemStorage {
+public class FileSystemStorageImpl implements FileSystemStorage {
 
-    private Path absoluteDirectoryPath;
-    private String relativeDirectoryPathStr;
+    protected Path absoluteDirectoryPath;
 
     public FileSystemStorageImpl(String relativeDirectoryPathStr) throws IOException {
         this.absoluteDirectoryPath = Paths.get(relativeDirectoryPathStr)
                 .toAbsolutePath()
                 .normalize();
-        this.relativeDirectoryPathStr = relativeDirectoryPathStr;
 
         Files.createDirectories(this.absoluteDirectoryPath);
     }
 
-    public String saveFile(@NotNull MultipartFile file) throws IOException {
 
-        String originalFilename = file.getOriginalFilename();
-        String fileName = UUID.randomUUID().toString() + "." + originalFilename.substring(originalFilename.lastIndexOf(".")+1);
-
-        Path fullFilePath = this.absoluteDirectoryPath.resolve(fileName);
-        Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
-
-        return fileName;
-    }
-
-    public String saveFile(@NotNull MultipartFile file, String fileNameWithoutExt) throws IOException {
+    public void saveFile(@NotNull MultipartFile file, @NotNull String fileNameWithoutExt) throws IOException {
 
         String originalFilename = file.getOriginalFilename();
         String fileName = fileNameWithoutExt + "." + originalFilename.substring(originalFilename.lastIndexOf(".")+1);
@@ -50,14 +37,9 @@ public class FileSystemStorageImpl implements IFileSystemStorage {
         Path fullFilePath = this.absoluteDirectoryPath.resolve(fileName);
         Files.copy(file.getInputStream(), fullFilePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return fileName;
     }
 
-
-    public FileSystemStorageImpl(){
-
-    }
-    public Resource loadFile(String fileName) throws FileNotFoundException {
+    public Resource loadFile(@NotNull String fileName) throws FileNotFoundException {
 
         Path file = this.absoluteDirectoryPath.resolve(fileName).normalize();
 
@@ -69,10 +51,12 @@ public class FileSystemStorageImpl implements IFileSystemStorage {
                 throw new FileNotFoundException("Couldn't find the file. (" + fileName  + ")");
             }
         } catch (MalformedURLException | FileNotFoundException e) {
-            throw new FileNotFoundException("Couldn't download the file. (" + fileName  + ")");
+            throw new FileNotFoundException("Couldn't download the file. (" + fileName  + "). (More : " + e.getMessage() + ")");
         }
+
     }
-    public long getFileSize(String fileName) throws IOException {
+
+    public long getFileSize(@NotNull String fileName) throws IOException {
         Path file = this.absoluteDirectoryPath.resolve(fileName).normalize();
         if (Files.exists(file) && Files.isReadable(file)) {
             return Files.size(file);

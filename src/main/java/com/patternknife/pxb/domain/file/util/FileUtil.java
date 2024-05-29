@@ -1,5 +1,6 @@
 package com.patternknife.pxb.domain.file.util;
 
+import jakarta.annotation.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtil {
@@ -9,11 +10,11 @@ public class FileUtil {
         return getFileExtension(fileName);
     }
 
-    public static String getFileExtension(String fileName) {
+    public static @Nullable String getFileExtension(String fileName) {
         if (fileName != null && fileName.contains(".")) {
-            // Extract the part of the string after the last dot
             return fileName.substring(fileName.lastIndexOf(".") + 1);
         }
-        return null; // Default case: no extension found
+        return null;
     }
+
 }

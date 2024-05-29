@@ -4,7 +4,7 @@ package com.patternknife.pxb.domain.excelgrouptask.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.patternknife.pxb.config.response.error.exception.data.AlreadyInProgressException;
 import com.patternknife.pxb.config.response.error.exception.data.ResourceNotFoundException;
-import com.patternknife.pxb.domain.exceldbcommontask.service.ExcelDBFileService;
+import com.patternknife.pxb.domain.file.service.ExcelGroupTaskFileService;
 
 import com.patternknife.pxb.domain.exceldbprocessor.factory.IExcelDBProcessorFactory;
 import com.patternknife.pxb.domain.exceldbprocessor.maxid.ExcelDBMaxIdRes;
@@ -26,6 +26,7 @@ import com.patternknife.pxb.domain.excelgrouptask.dao.ExcelGroupTaskRepositorySu
 import com.patternknife.pxb.domain.excelgrouptask.dto.ExcelGroupTaskReqDTO;
 import com.patternknife.pxb.domain.excelgrouptask.dto.ExcelGroupTaskResDTO;
 import com.patternknife.pxb.domain.excelgrouptask.entity.ExcelGroupTask;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.core.io.Resource;
@@ -33,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -54,19 +56,19 @@ public class ExcelGroupTaskService {
     private final IExcelDBProcessorFactory excelDBProcessorFactory;
 
 
-    private final ExcelDBFileService excelDBFileService;
+    private final ExcelGroupTaskFileService excelGroupTaskFileService;
 
     private final ExcelDBReadTaskEventQueue eventQueue;
 
     /* 1. ExcelGroupTask */
 
-    @Transactional( rollbackFor=Exception.class)
-    public ExcelGroupTaskResDTO.CreateOrUpdateRes createExcelGroupTask(ExcelGroupTaskReqDTO.CreateReq dto) {
+    @Transactional(rollbackFor=Exception.class)
+    public ExcelGroupTaskResDTO.CreateOrUpdateRes createExcelGroupTask(@NotNull ExcelGroupTaskReqDTO.CreateReq dto) {
         return new ExcelGroupTaskResDTO.CreateOrUpdateRes(excelGroupTaskRepository.save(dto.toEntity()));
     }
 
     @Transactional( rollbackFor=Exception.class)
-    public ExcelGroupTaskResDTO.CreateOrUpdateRes updateExcelGroupTask(Long id, ExcelGroupTaskReqDTO.UpdateReq dto) {
+    public ExcelGroupTaskResDTO.CreateOrUpdateRes updateExcelGroupTask(@NotNull Long id, @NotNull ExcelGroupTaskReqDTO.UpdateReq dto) {
 
         ExcelGroupTask excelGroupTask = null;
 
@@ -146,7 +148,7 @@ public class ExcelGroupTaskService {
         ExcelGroupTask excelGroupTask = null;
         Workbook workbook = null;
 
-        Resource resource = excelDBFileService.getExcelGroupTaskExcelBinaryById(dto.getId());
+        Resource resource = excelGroupTaskFileService.getExcelGroupTaskExcelBinaryById(dto.getId());
 
         try {
 
@@ -308,10 +310,13 @@ public class ExcelGroupTaskService {
             excelDBReadTaskRepository.deleteByGroupId(dto.getId());
 
             // Create an empty Excel file to insert DB values
-            excelDBFileService.createEmptyExcelDBReadGroupTaskExcel(dto.getId());
+            excelGroupTaskFileService.createEmptyExcelDBReadGroupTaskExcel(dto.getId());
 
             // Retrieve the newly created empty Excel file
-            Resource resource = excelDBFileService.getExcelGroupTaskExcelDBReadBinaryById(dto.getId());
+            Resource resource = excelGroupTaskFileService.getExcelGroupTaskExcelBinaryById(dto.getId());
+            if(resource == null || !resource.exists()){
+                throw new FileNotFoundException("File NOT found for ID :: " + dto.getId());
+            }
 
 
             // Get Max ID

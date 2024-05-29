@@ -56,7 +56,6 @@ public class ClinicResDTO {
     @Getter
     public static class OneDetails extends ExcelDBMaxIdRes {
 
-
         private String name;
         private String phoneNumber;
 
