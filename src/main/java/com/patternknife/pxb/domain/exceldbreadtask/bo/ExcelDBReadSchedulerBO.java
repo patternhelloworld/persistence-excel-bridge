@@ -6,7 +6,7 @@ import com.patternknife.pxb.domain.exceldbprocessor.factory.IExcelDBProcessorFac
 import com.patternknife.pxb.domain.exceldbprocessor.processor.ExcelDBReadProcessor;
 import com.patternknife.pxb.domain.exceldbreadtask.queue.ExcelDBReadTaskEventDomain;
 import com.patternknife.pxb.domain.exceldbreadtask.queue.ExcelDBReadTaskEventQueue;
-import com.patternknife.pxb.domain.excelgrouptask.cache.InMemoryExcelGroupTasks;
+import com.patternknife.pxb.domain.excelgrouptask.cache.PxbInMemoryExcelGroupTaskIds;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +17,11 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @Service
-public class ExcelDBReadTaskBO {
+public class ExcelDBReadSchedulerBO {
 
     private static final Logger logger = LoggerFactory.getLogger(PxbAsyncLogConfig.class);
 
-    private final IExcelDBProcessorFactory excelDBProcessorFactory;
+    private final IExcelDBProcessorFactory iExcelDBProcessorFactory;
 
 
     private final IExcelDBReadInMemoryData excelDBReadInMemoryData;
@@ -30,7 +30,7 @@ public class ExcelDBReadTaskBO {
 
     public void flushingAllIfNoRemaining() {
 
-        for (Long taskId : InMemoryExcelGroupTasks.getInstance().getReadTaskGroupIds()) {
+        for (Long taskId : PxbInMemoryExcelGroupTaskIds.getInstance().getReadTaskGroupIds()) {
             flushingIfNoRemaining(taskId);
         }
     }
@@ -61,14 +61,14 @@ public class ExcelDBReadTaskBO {
 
     public ExcelDBReadTaskEventDomain updateInMemoryWithDBDataInChunks(ExcelDBReadTaskEventDomain excelDBReadTaskEventDomain) throws Exception {
 
-        ((ExcelDBReadProcessor)excelDBProcessorFactory.getProcessor(excelDBReadTaskEventDomain.getGroupId())).cacheDBReadToInMemory(excelDBReadTaskEventDomain, excelDBReadInMemoryData);
+        ((ExcelDBReadProcessor) iExcelDBProcessorFactory.getProcessor(excelDBReadTaskEventDomain.getGroupId())).cacheDBReadToInMemory(excelDBReadTaskEventDomain, excelDBReadInMemoryData);
 
         return excelDBReadTaskEventDomain;
     }
 
     public void flushInMemoryToExcelFile(Long excelGroupId) throws IOException {
 
-        ((ExcelDBReadProcessor)excelDBProcessorFactory.getProcessor(excelGroupId)).flushInMemoryToExcelFile(excelGroupId, excelDBReadInMemoryData);
+        ((ExcelDBReadProcessor) iExcelDBProcessorFactory.getProcessor(excelGroupId)).flushInMemoryToExcelFile(excelGroupId, excelDBReadInMemoryData);
     }
 
 }

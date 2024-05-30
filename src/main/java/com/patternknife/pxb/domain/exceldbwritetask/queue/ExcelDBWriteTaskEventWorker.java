@@ -3,8 +3,7 @@ package com.patternknife.pxb.domain.exceldbwritetask.queue;
 
 import com.patternknife.pxb.config.logger.module.PxbAsyncLogConfig;
 import com.patternknife.pxb.config.response.error.CustomExceptionUtils;
-import com.patternknife.pxb.domain.exceldbwritetask.bo.IExcelDBWriteTaskBO;
-import com.patternknife.pxb.domain.exceldbwritetask.bo.factory.IExcelDBWriteBOFactory;
+import com.patternknife.pxb.domain.exceldbwritetask.bo.ExcelDBWriteSchedulerBO;
 import com.patternknife.pxb.domain.exceldbwritetask.dao.ExcelDBWriteTaskRepositorySupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,7 @@ public class ExcelDBWriteTaskEventWorker implements Runnable {
 
     private final ExcelDBWriteTaskEventQueue eventQueue;
     private final ExcelDBWriteTaskRepositorySupport excelDBWriteTaskRepositorySupport;
-    private final IExcelDBWriteBOFactory iExcelDBWriteBOFactory;
+    private final ExcelDBWriteSchedulerBO excelDBWriteSchedulerBO;
 
     @Override
     public void run() {
@@ -41,11 +40,8 @@ public class ExcelDBWriteTaskEventWorker implements Runnable {
         }
     }
 
-    private ExcelDBWriteTaskEventDomain processing(ExcelDBWriteTaskEventDomain excelTaskEventDomain) {
-
-        IExcelDBWriteTaskBO iExcelDBWriteTaskBO = iExcelDBWriteBOFactory.getBO(excelTaskEventDomain.getGroupId());
-        return iExcelDBWriteTaskBO.updateTableFromExcel(excelTaskEventDomain);
-
+    private ExcelDBWriteTaskEventDomain processing(ExcelDBWriteTaskEventDomain excelDBWriteTaskEventDomain) {
+        return excelDBWriteSchedulerBO.updateTableFromExcel(excelDBWriteTaskEventDomain);
     }
 
     private void markSuccess(ExcelDBWriteTaskEventDomain excelDBWriteTaskEventDomain) {

@@ -1,78 +1,139 @@
-package com.patternknife.pxbsample.domain.exceldbimpl.bo;
+package com.patternknife.pxbsample.domain.exceldbimpl.processor;
 
 
-import com.patternknife.pxb.domain.exceldbwritetask.bo.IExcelDBWriteTaskBO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.patternknife.pxb.domain.exceldbprocessor.cache.IExcelDBReadInMemoryData;
+import com.patternknife.pxb.domain.exceldbprocessor.maxid.MaxIdBasedExcelDBReadProcessor;
+import com.patternknife.pxb.domain.exceldbprocessor.processor.ExcelDBReadProcessor;
+import com.patternknife.pxb.domain.exceldbprocessor.processor.ExcelDBWriteProcessor;
+import com.patternknife.pxb.domain.exceldbreadtask.queue.ExcelDBReadTaskEventDomain;
 import com.patternknife.pxb.domain.exceldbwritetask.queue.ExcelDBWriteTaskEventDomain;
+import com.patternknife.pxb.domain.file.bo.ExcelGroupTaskFileBO;
 import com.patternknife.pxbsample.config.logger.module.ExcelAsyncUploadErrorLogConfig;
+import com.patternknife.pxbsample.config.response.error.exception.data.PreconditionFailedException;
 import com.patternknife.pxbsample.domain.clinic.dao.ClinicRepository;
+import com.patternknife.pxbsample.domain.clinic.dao.ClinicRepositorySupport;
+import com.patternknife.pxbsample.domain.clinic.dto.ClinicResDTO;
+import com.patternknife.pxbsample.domain.clinic.dto.ClinicSearchFilter;
 import com.patternknife.pxbsample.domain.clinic.entity.Clinic;
-import com.patternknife.pxbsample.domain.clinic.enums.ClinicStatusConst;
-import com.patternknife.pxbsample.domain.exceldbimpl.enums.clinic.ExcelClinicTaskColumnMapping;
+import com.patternknife.pxbsample.domain.exceldbimpl.cache.ExcelDBReadInMemoryData;
 import com.patternknife.pxbsample.util.CustomUtils;
 import com.patternknife.pxbsample.util.ReflectionUtils;
-import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 
 
-@RequiredArgsConstructor
-@Service
-public class ExcelDBWriteClinicTaskBO implements IExcelDBWriteTaskBO {
+@Component
+public class ClinicExcelDBReadWriteProcessor extends MaxIdBasedExcelDBReadProcessor
+        implements ExcelDBReadProcessor, ExcelDBWriteProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(ExcelAsyncUploadErrorLogConfig.class);
 
-    private static class CellValueReplacer {
-        // 사용 시 엑셀 스트링에 공백이 있을 수 있으므로, 대상에 trim() 을 항상 해준다.
-        private final static String NAME_STATUS_RX = "(?:-|[\\n\\r\\t\\s])+(운영|폐업|중지)$";
+    private final ClinicRepositorySupport clinicRepositorySupport;
+    private final ClinicRepository clinicRepository;
+    private final ExcelGroupTaskFileBO fileBO;
 
-        public static String removeStatusFromName(String name){
-            Pattern pattern = Pattern.compile(NAME_STATUS_RX);
-            return name.trim().replaceAll(NAME_STATUS_RX, "");
-        }
+    public ClinicExcelDBReadWriteProcessor(ClinicRepositorySupport clinicRepositorySupport, ClinicRepository clinicRepository, ExcelGroupTaskFileBO fileBO) throws IOException {
+        this.clinicRepositorySupport = clinicRepositorySupport;
+        this.clinicRepository = clinicRepository;
+        this.fileBO = fileBO;
 
-        public static ClinicStatusConst nameStatus(String name) {
-            Pattern pattern = Pattern.compile(NAME_STATUS_RX);
-            Matcher matcher = pattern.matcher(name.trim());
+    }
 
-            if (matcher.find()) {
-                String status = matcher.group(1);
-                switch (status) {
-                    case "폐업":
-                        return ClinicStatusConst.폐업;
-                    case "중지":
-                        return ClinicStatusConst.중지;
-                    default:
-                        return ClinicStatusConst.운영;
+    @Override
+    public Page<ClinicResDTO.OneDetails> snapshotDBRead(int pageSize) throws JsonProcessingException {
+        return clinicRepositorySupport.findDetailsByPageAndFilter(false, 1 ,pageSize, null, serializedSorterValueFilter, null);
+    }
+
+
+    @Override
+    public void cacheDBReadToInMemory(ExcelDBReadTaskEventDomain excelDBReadTaskEventDomain, IExcelDBReadInMemoryData excelDBReadInMemoryData) throws Exception {
+        ClinicSearchFilter clinicSearchFilter = new ClinicSearchFilter();
+        clinicSearchFilter.setMaxId(excelDBReadTaskEventDomain.getMaxId());
+
+        Page<ClinicResDTO.OneDetails> oneDetails = clinicRepositorySupport.findDetailsByPageAndFilter(false, excelDBReadTaskEventDomain.getPageNum(),
+                excelDBReadTaskEventDomain.getPageSize(), new ObjectMapper().writeValueAsString(clinicSearchFilter), serializedSorterValueFilter, null);
+
+        ((ExcelDBReadInMemoryData)excelDBReadInMemoryData).addClinicDetails(oneDetails.getContent());
+    }
+
+    @Override
+    public void flushInMemoryToExcelFile(Long excelGroupId, IExcelDBReadInMemoryData iExcelDBReadInMemoryData) throws IOException {
+
+        ExcelDBReadInMemoryData excelDBReadInMemoryData = (ExcelDBReadInMemoryData) iExcelDBReadInMemoryData;
+
+        if(!(excelDBReadInMemoryData.getClinicDetails().isEmpty())){
+
+            try (SXSSFWorkbook workbook = new SXSSFWorkbook(2000)) {
+
+                Sheet sheet = workbook.createSheet("병원 리스트");
+
+                final int headerRowIndex = 0;
+
+                Row row = sheet.createRow(headerRowIndex);
+
+                createCell(row, 0, "No.");
+                createCell(row, 1, "병원명");
+                createCell(row, 2, "병원번호");
+                createCell(row, 3, "데이터 생성일");
+
+
+                int rowIndex = headerRowIndex + 1;
+
+                for (ClinicResDTO.OneDetails oneDetails : excelDBReadInMemoryData.getClinicDetails()) {
+
+                    row = sheet.createRow(rowIndex);
+
+
+                    createCell(row, 0, String.valueOf(oneDetails.getId()));
+                    createCell(row, 1, oneDetails.getName());
+                    createCell(row, 2, oneDetails.getPhoneNumber());
+                    createCell(row, 3, String.valueOf(oneDetails.getCreatedAt()));
+
+
+                    rowIndex++;
+
                 }
-            } else {
-                return ClinicStatusConst.운영;
+
+                fileBO.createExcelDBReadGroupTaskExcel(excelGroupId, workbook);
             }
         }
     }
 
-    private final ClinicRepository clinicRepository;
+
 
     @Override
-    public ExcelDBWriteTaskEventDomain logNotUpdatedInfo(ExcelDBWriteTaskEventDomain excelDBWriteTaskEventDomain,
-                                                         String msg, int rowIndex, Boolean isWholeRowFailed){
-        logger.trace(msg);
-        return excelDBWriteTaskEventDomain.updateErrorMessage(rowIndex +  " (액셀 행 번호) : " + msg + " " + (isWholeRowFailed ? "(행 단위 업데이트 실패)" : "(열 단위 업데이트 실패)"));
+    public void validateColumnsBeforeDBWrite(Workbook workbook) {
+        Sheet sheet = workbook.getSheetAt(0);
+        Row firstRow = sheet.getRow(0);
+        Map<Integer, String> columnMapping = getClinicColumnMapping();
+
+        for (Cell cell : firstRow) {
+            String excelColumnName = cell.getStringCellValue();
+            int columnIndex = cell.getColumnIndex();
+
+            if (!columnMapping.containsKey(columnIndex) || !columnMapping.get(columnIndex).equals(excelColumnName)) {
+                throw new PreconditionFailedException("1 행의 셀 값과 열 번호가 일치하지 않음이 발견 되었습니다. (" + columnIndex + " 번째 열은 " + columnMapping.get(columnIndex) + " 값을 가져야 하지만, " + excelColumnName + " 값이 확인 되었습니다.");
+            }
+        }
+
     }
 
-
-    // 메인 함수
     @Override
-    public synchronized ExcelDBWriteTaskEventDomain updateTableFromExcel(ExcelDBWriteTaskEventDomain excelDBWriteTaskEventDomain)  {
-
+    public ExcelDBWriteTaskEventDomain updateTableFromExcel(ExcelDBWriteTaskEventDomain excelDBWriteTaskEventDomain) {
         Sheet sheet = excelDBWriteTaskEventDomain.getWorkbook().getSheetAt(0);
         int endRow = excelDBWriteTaskEventDomain.getEndRow() != null ? excelDBWriteTaskEventDomain.getEndRow() : sheet.getLastRowNum();
 
@@ -114,7 +175,11 @@ public class ExcelDBWriteClinicTaskBO implements IExcelDBWriteTaskBO {
         return excelDBWriteTaskEventDomain;
     }
 
-
+    @Override
+    public ExcelDBWriteTaskEventDomain logNotUpdatedInfo(ExcelDBWriteTaskEventDomain excelDBWriteTaskEventDomain, String msg, int rowIndex, Boolean isWholeRowFailed) {
+        logger.trace(msg);
+        return excelDBWriteTaskEventDomain.updateErrorMessage(rowIndex +  " (액셀 행 번호) : " + msg + " " + (isWholeRowFailed ? "(행 단위 업데이트 실패)" : "(열 단위 업데이트 실패)"));
+    }
 
 
     private Boolean isUpdatable(Clinic clinic, Row row, ExcelClinicTaskColumnMapping excelClinicTaskColumnMapping, ExcelDBWriteTaskEventDomain excelTaskEventDomain){
@@ -148,7 +213,6 @@ public class ExcelDBWriteClinicTaskBO implements IExcelDBWriteTaskBO {
         if(updateField) {
             if (mapping.equals(ExcelClinicTaskColumnMapping.NAME)) {
 
-                clinic.setStatus(CellValueReplacer.nameStatus(newCellValue).getValue());
                 //clinic.setName(CellValueReplacer.removeStatusFromName(newCellValue));
                 clinic.setName(newCellValue);
             } else {
@@ -209,4 +273,15 @@ public class ExcelDBWriteClinicTaskBO implements IExcelDBWriteTaskBO {
         }
         return false;
     }
+
+
+    private static Map<Integer, String> getClinicColumnMapping() {
+        Map<Integer, String> map = new HashMap<>();
+        for (ExcelClinicTaskColumnMapping column : ExcelClinicTaskColumnMapping.values()) {
+            map.put(column.getColumnNumber(), column.getExcelColumnName());
+        }
+        return map;
+    }
+
+
 }

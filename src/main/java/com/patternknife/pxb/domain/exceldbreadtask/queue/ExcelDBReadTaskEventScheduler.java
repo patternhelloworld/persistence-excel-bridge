@@ -1,7 +1,7 @@
 package com.patternknife.pxb.domain.exceldbreadtask.queue;
 
 
-import com.patternknife.pxb.domain.exceldbreadtask.bo.ExcelDBReadTaskBO;
+import com.patternknife.pxb.domain.exceldbreadtask.bo.ExcelDBReadSchedulerBO;
 import com.patternknife.pxb.domain.exceldbreadtask.dao.ExcelDBReadTaskRepositorySupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -15,12 +15,12 @@ public class ExcelDBReadTaskEventScheduler {
 
     private final ExcelDBReadTaskEventQueue eventQueue;
     private final ExcelDBReadTaskRepositorySupport excelDBReadTaskRepositorySupport;
-    private final ExcelDBReadTaskBO excelDBReadTaskBO;
+    private final ExcelDBReadSchedulerBO excelDBReadSchedulerBO;
 
     @Async("taskScheduler")
     @Scheduled(fixedRate = 5000)
     public void schedule() {
-        new ExcelDBReadTaskEventWorker(eventQueue, excelDBReadTaskRepositorySupport, excelDBReadTaskBO)
+        new ExcelDBReadTaskEventWorker(eventQueue, excelDBReadTaskRepositorySupport, excelDBReadSchedulerBO)
                 .run();
     }
 

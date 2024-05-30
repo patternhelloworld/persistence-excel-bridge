@@ -11,26 +11,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class InMemoryExcelGroupTasks {
+public class PxbInMemoryExcelGroupTaskIds {
 
     private static final Logger logger = LoggerFactory.getLogger(PxbBootLogConfig.class);
 
-    private static InMemoryExcelGroupTasks instance;
+    private static PxbInMemoryExcelGroupTaskIds instance;
 
     private List<Long> readTaskGroupIds = new ArrayList<>();
     private List<Long> writeTaskGroupIds = new ArrayList<>();
 
-    private InMemoryExcelGroupTasks() {
+    private PxbInMemoryExcelGroupTaskIds() {
     }
 
-    public static synchronized InMemoryExcelGroupTasks getInstance() {
+    public static synchronized PxbInMemoryExcelGroupTaskIds getInstance() {
         if (instance == null) {
-            instance = new InMemoryExcelGroupTasks();
+            instance = new PxbInMemoryExcelGroupTaskIds();
         }
         return instance;
     }
 
-    public void initialize(ExcelGroupTaskRepository repository) {
+    public void initializeIds(ExcelGroupTaskRepository repository) {
 
         List<ExcelGroupTask> tasks;
 
@@ -54,6 +54,7 @@ public class InMemoryExcelGroupTasks {
                 .filter(task -> task.getReadOrWrite() == 2)
                 .map(ExcelGroupTask::getId)
                 .collect(Collectors.toList());
+
     }
 
     public List<Long> getReadTaskGroupIds() {

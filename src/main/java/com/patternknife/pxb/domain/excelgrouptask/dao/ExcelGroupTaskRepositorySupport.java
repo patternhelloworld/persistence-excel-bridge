@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.patternknife.pxb.config.response.error.exception.data.ResourceNotFoundException;
 import com.patternknife.pxb.domain.common.dto.DateRangeFilter;
 import com.patternknife.pxb.domain.common.dto.SorterValueFilter;
-import com.patternknife.pxb.domain.excelgrouptask.cache.InMemoryExcelGroupTasks;
+import com.patternknife.pxb.domain.excelgrouptask.cache.PxbInMemoryExcelGroupTaskIds;
 import com.patternknife.pxb.domain.excelgrouptask.dto.ExcelGroupTaskReqDTO;
 import com.patternknife.pxb.domain.excelgrouptask.dto.ExcelGroupTaskResDTO;
 import com.patternknife.pxb.domain.excelgrouptask.dto.ExcelGroupTaskSearchFilter;
@@ -111,7 +111,7 @@ public class ExcelGroupTaskRepositorySupport extends QuerydslRepositorySupport {
                         qExcelGroupTask.originalFileName,
                         qExcelGroupTask.excelUpdatedAt,
                         qExcelGroupTask.createdAt, qExcelGroupTask.updatedAt))
-                .from(qExcelGroupTask).where(qExcelGroupTask.id.in(InMemoryExcelGroupTasks.getInstance().getWriteTaskGroupIds()));
+                .from(qExcelGroupTask).where(qExcelGroupTask.id.in(PxbInMemoryExcelGroupTaskIds.getInstance().getWriteTaskGroupIds()));
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -217,7 +217,7 @@ public class ExcelGroupTaskRepositorySupport extends QuerydslRepositorySupport {
                         qExcelGroupTask.description, qExcelGroupTask.savedFileExt,
                         qExcelGroupTask.originalFileName, qExcelGroupTask.excelUpdatedAt,
                         qExcelGroupTask.createdAt, qExcelGroupTask.updatedAt))
-                .from(qExcelGroupTask).where(qExcelGroupTask.id.in(InMemoryExcelGroupTasks.getInstance().getReadTaskGroupIds()));
+                .from(qExcelGroupTask).where(qExcelGroupTask.id.in(PxbInMemoryExcelGroupTaskIds.getInstance().getReadTaskGroupIds()));
 
         ObjectMapper objectMapper = new ObjectMapper();
 

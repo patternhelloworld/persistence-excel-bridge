@@ -4,7 +4,12 @@
 
 ## Table of Contents
 - [Features](#Features)
-
+- [Requirements](#Requirements)
+- [Quick Start with Samples](#Quick-Start-with-Samples)
+- [Quick Guide on Usage](#Quick-Guide-on-Usage)
+- [Structure](#Structure)
+- [Gitlab Container Registry](#Gitlab-Container-Registry)
+- [Extra Information](#Extra-Information)
 ---
 
 ## Features
@@ -21,3 +26,9 @@
 | Backend-Language  | Java 17                                          |
 | Backend-Framework | Spring-Boot 3.1.2                                |
 | Libraries         | JPA & QueryDSL are necessary... More in pom.xml. |
+
+## Quick Start with Samples
+
+- SQL
+- properties
+- images in reference

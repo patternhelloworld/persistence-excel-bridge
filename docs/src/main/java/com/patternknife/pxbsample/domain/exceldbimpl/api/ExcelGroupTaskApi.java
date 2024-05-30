@@ -1,4 +1,4 @@
-package com.patternknife.pxbsample.domain.api;
+package com.patternknife.pxbsample.domain.exceldbimpl.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.patternknife.pxb.domain.excelgrouptask.dto.ExcelGroupTaskReqDTO;

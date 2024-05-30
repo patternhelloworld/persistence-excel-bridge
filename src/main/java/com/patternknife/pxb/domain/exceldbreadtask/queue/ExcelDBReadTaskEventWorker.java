@@ -3,7 +3,7 @@ package com.patternknife.pxb.domain.exceldbreadtask.queue;
 
 import com.patternknife.pxb.config.logger.module.PxbAsyncLogConfig;
 import com.patternknife.pxb.config.response.error.CustomExceptionUtils;
-import com.patternknife.pxb.domain.exceldbreadtask.bo.ExcelDBReadTaskBO;
+import com.patternknife.pxb.domain.exceldbreadtask.bo.ExcelDBReadSchedulerBO;
 import com.patternknife.pxb.domain.exceldbreadtask.dao.ExcelDBReadTaskRepositorySupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ public class ExcelDBReadTaskEventWorker implements Runnable {
 
     private final ExcelDBReadTaskEventQueue eventQueue;
     private final ExcelDBReadTaskRepositorySupport excelDBReadTaskRepositorySupport;
-    private final ExcelDBReadTaskBO excelDBReadTaskBO;
+    private final ExcelDBReadSchedulerBO excelDBReadSchedulerBO;
 
     @Override
     public void run() {
@@ -36,12 +36,12 @@ public class ExcelDBReadTaskEventWorker implements Runnable {
             }
         }
 
-        excelDBReadTaskBO.flushingAllIfNoRemaining();
+        excelDBReadSchedulerBO.flushingAllIfNoRemaining();
     }
 
     private ExcelDBReadTaskEventDomain processing(ExcelDBReadTaskEventDomain excelDBReadTaskEventDomain) throws Exception {
 
-        return excelDBReadTaskBO.updateInMemoryWithDBDataInChunks(excelDBReadTaskEventDomain);
+        return excelDBReadSchedulerBO.updateInMemoryWithDBDataInChunks(excelDBReadTaskEventDomain);
     }
 
 

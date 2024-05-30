@@ -1,4 +1,4 @@
-package com.patternknife.pxbsample.domain.exceldbimpl.enums.clinic;
+package com.patternknife.pxbsample.domain.exceldbimpl.processor;
 
 public enum ExcelClinicTaskColumnMapping {
     NAME(0, "name", "Name", "name"),

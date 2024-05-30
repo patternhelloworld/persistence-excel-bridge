@@ -17,14 +17,14 @@ public class ThreadPoolConfig {
     public ThreadPoolTaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 
-        // 스케쥴러 스레드풀의 사이즈. 여기서는 머신의 프로세서 수로 하였다.
+        // Size of the scheduler thread pool. Here it is set to the number of processors of the machine.
         // Runtime.getRuntime().availableProcessors()
         taskScheduler.setPoolSize(3);
 
-        // 로그에 찍힐 스케쥴러 스레드의 접두사
+        // Prefix of the scheduler thread name to be logged
         taskScheduler.setThreadNamePrefix("Scheduler-Thread-");
 
-        // 모든 설정을 적용하고 ThreadPoolTaskScheduler를 초기화
+        // Apply all settings and initialize the ThreadPoolTaskScheduler
         taskScheduler.initialize();
 
         return taskScheduler;
@@ -34,30 +34,30 @@ public class ThreadPoolConfig {
     public ThreadPoolTaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 
-        // 로그에 찍힐 스레드의 접두사
+        // Prefix of the thread name to be logged
         taskExecutor.setThreadNamePrefix("Async-Thread-");
 
-        // 기본적으로 유지할 스레드풀의 사이즈. 설정값은 머신의 프로세서 수로 하였다.
+        // Core size of the thread pool to be maintained. The set value is the number of processors of the machine.
         taskExecutor.setCorePoolSize(3);
 
-        // 최대 스레드풀 사이즈
+        // Maximum thread pool size
         taskExecutor.setMaxPoolSize(5);
 
-        // 최대 스레드풀 사이즈만큼 스레드가 생성되면 생성을 대기시킬 스레드의 수
+        // The number of threads to wait when thread creation is to be queued after creating threads up to MaxPoolSize
         taskExecutor.setQueueCapacity(50);
 
-        // MaxPoolSize와 QueueCapacity이상으로 스레드가 생성되야 할 경우의 정책
-        // CallerRunsPolicy는 스레드를 생성하고 처리를 위임하려고 한 스레드가 직접 모든 처리를 다하도록 하는 정책
+        // Policy for when threads need to be created beyond MaxPoolSize and QueueCapacity
+        // CallerRunsPolicy is a policy where the thread that tried to create and delegate the thread handles all processing directly
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 
-        // 어플리케이션 종료시 동작중이던 스레드가 모든 처리를 완료할때까지 대기한 후 종료한다
+        // Wait for running threads to complete all processing before shutting down when the application exits
         taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
 
-        // CorePool 스레드의 유휴시간(기본 60s)이 지나면 kill할지 여부.
-        // 기본값은 false이며, true로 설정하면 스레드를 kill한다.
+        // Whether to kill core pool threads after their idle time (default 60s) has passed.
+        // The default value is false, and if set to true, the threads are killed.
         taskExecutor.setAllowCoreThreadTimeOut(false);
 
-        // 모든 설정을 적용하고 ThreadPoolTaskExecutor를 초기화
+        // Apply all settings and initialize the ThreadPoolTaskExecutor
         taskExecutor.initialize();
 
         return taskExecutor;
