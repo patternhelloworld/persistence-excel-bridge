@@ -21,11 +21,11 @@ public class ExcelDBProcessorFactory implements IExcelDBProcessorFactory {
 
         this.applicationContext = applicationContext;
 
+        // You can separate this same class into Read and Write if you'd like.
         // DB Write
-        processorMap.put(1L, ExcelDBClinicProcessor.class);
-
+        processorMap.put(1L, ClinicExcelDBReadWriteProcessor.class);
         // DB Read
-        processorMap.put(55L, ExcelDBClinicProcessor.class);
+        processorMap.put(55L, ClinicExcelDBReadWriteProcessor.class);
 
     }
 

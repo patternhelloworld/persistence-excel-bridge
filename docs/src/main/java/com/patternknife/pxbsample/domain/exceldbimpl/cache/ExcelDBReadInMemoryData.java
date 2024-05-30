@@ -27,16 +27,13 @@ public class ExcelDBReadInMemoryData implements IExcelDBReadInMemoryData {
         this.clinicDetails = new ArrayList<>();
     }
 
+
     public void addOneWithCountsWithAdmins(List<CustomerResDTO.OneWithCountsWithAdmin> oneWithCountsWithAdmins) {
         this.customerWithCountsWithAdmins.addAll(oneWithCountsWithAdmins);
     }
-
-
     public void addClinicDetails(List<ClinicResDTO.OneDetails> oneDetails) {
         this.clinicDetails.addAll(oneDetails);
     }
-
-
 
     public List<CustomerResDTO.OneWithCountsWithAdmin> getCustomerWithCountsWithAdmins() {
         return customerWithCountsWithAdmins;
@@ -54,7 +51,7 @@ public class ExcelDBReadInMemoryData implements IExcelDBReadInMemoryData {
         }else if (excelGroupTaskId.equals(55L)) {
             return !clinicDetails.isEmpty();
         }else{
-            throw new IllegalStateException("hasDataForId Not valid ID :: " + excelGroupTaskId);
+            throw new IllegalStateException("hasDataForId Not valid Excel Group ID :: " + excelGroupTaskId);
         }
     }
 
@@ -64,7 +61,7 @@ public class ExcelDBReadInMemoryData implements IExcelDBReadInMemoryData {
         }else if (excelGroupTaskId.equals(55L)) {
             this.clinicDetails.clear();
         } else{
-            throw new IllegalStateException("clearDataForId Not valid ID :: " + excelGroupTaskId);
+            throw new IllegalStateException("clearDataForId Not valid Excel Group ID :: " + excelGroupTaskId);
         }
     }
 }

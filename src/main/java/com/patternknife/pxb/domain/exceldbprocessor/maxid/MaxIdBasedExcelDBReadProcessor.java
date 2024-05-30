@@ -4,10 +4,10 @@ import com.patternknife.pxb.domain.common.dto.SorterValueFilter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public abstract class MaxIdBasedExcelDBProcessor {
+public abstract class MaxIdBasedExcelDBReadProcessor {
     protected String serializedSorterValueFilter;
 
-    public MaxIdBasedExcelDBProcessor() throws JsonProcessingException {
+    public MaxIdBasedExcelDBReadProcessor() throws JsonProcessingException {
         initializeSerializedSorterValueFilter();
     }
 
