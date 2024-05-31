@@ -28,7 +28,18 @@
 
 ## Quick Settings
 
-### Build source codes
+### Central Repository OR Build source codes
+
+1) Central Repository
+````xml
+<dependency>
+    <groupId>io.github.patternknife.pxb</groupId>
+    <artifactId>persistence-excel-bridge</artifactId>
+    <version>0.0.1</version>
+</dependency>
+````
+
+2) Build source codes
 - Build the 'persistence-excel-bridge' (library) by running at the project root (./)
   - WIN : ``./mvnw clean install`` or ``.\win-mvn-build.bat``
   - Linux : After installing the Maven, ``mvn clean install``
