@@ -6,7 +6,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.patternknife.pxbsample</groupId>
+    <groupId>io.github.patternknife.pxbsample</groupId>
     <artifactId>persistence-excel-bridge-docs</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
@@ -189,7 +189,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         </dependency>
 
         <dependency>
-            <groupId>com.patternknife.pxb</groupId>
+            <groupId>io.github.patternknife.pxb</groupId>
             <artifactId>persistence-excel-bridge</artifactId>
             <version>0.0.1</version>
         </dependency>

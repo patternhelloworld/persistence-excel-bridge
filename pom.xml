@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 
-	<groupId>com.patternknife.pxb</groupId>
+	<groupId>io.github.patternknife.pxb</groupId>
 	<artifactId>persistence-excel-bridge</artifactId>
 	<version>0.0.1</version>
 	<name>persistence-excel-bridge</name>

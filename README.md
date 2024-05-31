@@ -40,11 +40,12 @@
 - Running ``./src/main/java/com/patternknife/pxb/domain/exceldbreadtask/schema/excel-db-read-task-schema.sql`` and ``./src/main/java/com/patternknife/pxb/domain/exceldbwritetask/schema/excel-db-write-task-schema.sql`` and ``./src/main/java/com/patternknife/pxb/domain/excelgrouptask/schema/excel-group-task-schema.sql`` cover only **persistence-excel-bridge**, which means the library requires only the three tables.
 
 ### Properties
-- Add ``com.patternknife.pxb.dir.root.excel-group-tasks=files/private/excel-group-tasks`` to your App's ``application.properties``.
+- Add ``io.github.patternknife.pxb.dir.root.excel-group-tasks=files/private/excel-group-tasks`` to your App's ``application.properties``.
 
 ### Things to Set in Your App
 - Let me explain this with the sample project (persistence-excel-bridge-docs).
 - Set the highlighted sources (or equivalent items applicable to your situation) in your App.
+- ```!IMPORTANT``` : ``com.patternknife`` has been changed to ``io.github.patternknife``. I will change the screenshots below soon.
 
 #### 1) SpringBootApplication : ``./docs/src/main/java/com/patternknife/pxbsample/PersistenceExcelBridgeDocsApplication.java``
 
@@ -106,7 +107,7 @@
   </appender>
 
 
-  <logger name="com.patternknife.pxb.config.logger.module" level="TRACE">
+  <logger name="io.github.patternknife.pxb.config.logger.module" level="TRACE">
   <appender-ref ref="PxbAsyncLogConfig" />
   <!--<appender-ref ref="Console" />-->
   </logger>
