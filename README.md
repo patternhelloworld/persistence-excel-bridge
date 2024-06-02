@@ -7,16 +7,16 @@
 - [Features](#Features)
 - [Requirements](#Requirements)
 - [Quick Settings](#Quick-Settings)
-- [Quick Guide on APIs (TO DO)](#Quick-Guide-on-APIs)
+- [Quick Guide on APIs](#Quick-Guide-on-APIs)
 - [Structure (TO DO)](#Structure)
 ---
 
 ## Features
 
-- In the case of data transfer from the database to Excel, ``Persistence-Excel-Bridge`` fetches data using pagination.
-- Using Spring Events, it calculates the total data size and then creates a job queue.
-  - It sets the Max ID value to ignore any data generated after this point to avoid disrupting the pagination process.
-- It utilizes idle threads to perform asynchronous chunked data transfer between Excel and the database.
+- Fetch data using pagination in the case of data transfer from the database to Excel
+- Calculate the total data size and then creates a job queue using Spring Events
+  - Set the Max ID value to ignore any data generated after this point to avoid disrupting the pagination process.
+- Utilize idle threads to perform asynchronous chunked data transfer between Excel and the database.
 
 ## Requirements
 
@@ -25,6 +25,8 @@
 | Backend-Language  | Java 17                                          |
 | Backend-Framework | Spring-Boot 3.1.2                                |
 | Libraries         | JPA & QueryDSL are necessary... More in pom.xml. |
+
+- Considered removing JPA and using JDBCTemplate directly to minimize library usage; however, keeping JPA for now to illustrate the structure of the library from a domain perspective.
 
 ## Quick Settings
 
@@ -54,9 +56,9 @@
 - Add ``io.github.patternknife.pxb.dir.root.excel-group-tasks=files/private/excel-group-tasks`` to your App's ``application.properties``.
 
 ### Things to Set in Your App
-- Let me explain this with the sample project (persistence-excel-bridge-docs).
+- Let me explain this with the sample project, ``persistence-excel-bridge-docs``.
 - Set the highlighted sources (or equivalent items applicable to your situation) in your App.
-- ```!IMPORTANT``` : ``com.patternknife`` has been changed to ``io.github.patternknife``. I will change the screenshots below soon.
+
 
 #### 1) SpringBootApplication : ``./docs/src/main/java/com/patternknife/pxbsample/PersistenceExcelBridgeDocsApplication.java``
 
@@ -79,9 +81,9 @@
 - ![folder-tree-queue.png](./docs/references/readme/folder-tree.png)
 
 - 4-1) ``api`` : Just copy and paste the folder, then customize the settings such as the REST API addresses and payload.
-- 4-2) ``cache`` : Write the class by referring to the sample.
-- 4-3) ``factoyr`` : Write the class by referring to the sample.
-- 4-4) ``processor`` : Write the class by referring to the sample.
+- 4-2) ``cache`` : Write .java files by referring to the sample.
+- 4-3) ``factoyr`` : Write .java files by referring to the sample.
+- 4-4) ``processor`` : Write .java files by referring to the sample.
 
 #### 5) Logging
 
@@ -130,5 +132,14 @@
 
 
 </configuration>
-
 ```
+
+## Quick Guide on APIs
+- APIs you need to use are in files ending with "-Service".
+ - ExcelGroupService (Common, Group, 8 Apis)
+ - ExcelDBWriteService (Excel->DB, One, 3 Apis)
+ - ExcelDBReadService (Excel<-DB, One, 3 Apis)
+- A "Group" consists of the range of rows to be inserted into DB or created in an Excel file. 
+ - More information on the "rows" can be found in entities ``( ExcelGroupTask, ExcelDBWriteTask, ExcelDBReadTask )``
+- The processing of a "Group" should be asynchronous, leave full logs, and be memory-efficient.
+- You can create your own front-end using the provided APIs.
