@@ -1,5 +1,6 @@
 package io.github.patternknife.pxb.domain.exceldbreadtask.queue;
 
+import io.github.patternknife.pxb.config.response.error.exception.data.ExcelDBReadTaskNotFoundException;
 import io.github.patternknife.pxb.domain.exceldbreadtask.dao.ExcelDBReadTaskRepositorySupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -15,7 +16,7 @@ public class ExcelDBReadTaskEventListener {
 
     // Instantly called after 'publish'
     @EventListener
-    public void onEvent(ExcelDBReadTaskEventDomain excelTaskEventDomain) {
+    public void onEvent(ExcelDBReadTaskEventDomain excelTaskEventDomain) throws ExcelDBReadTaskNotFoundException {
 
         if (!excelTaskEventDomain.isStandBy()) {
             return;
@@ -30,7 +31,7 @@ public class ExcelDBReadTaskEventListener {
         eventQueue.offer(excelTaskEventDomain);
     }
 
-    private ExcelDBReadTaskEventDomain updateStatus(ExcelDBReadTaskEventDomain excelTaskEventDomain, ExcelDBReadTaskEventDomain.ExcelTaskStatus status) {
+    private ExcelDBReadTaskEventDomain updateStatus(ExcelDBReadTaskEventDomain excelTaskEventDomain, ExcelDBReadTaskEventDomain.ExcelTaskStatus status) throws ExcelDBReadTaskNotFoundException {
         ExcelDBReadTaskEventDomain.ExcelTaskStatus beforeStatus = excelTaskEventDomain.getStatus();
         ExcelDBReadTaskEventDomain updatedExcelTaskEventDomain = excelTaskEventDomain.update(status);
 

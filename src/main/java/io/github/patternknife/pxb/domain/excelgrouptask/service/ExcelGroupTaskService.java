@@ -2,10 +2,7 @@ package io.github.patternknife.pxb.domain.excelgrouptask.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.patternknife.pxb.config.response.error.exception.data.AlreadyInProgressException;
-import io.github.patternknife.pxb.config.response.error.exception.data.ResourceNotFoundException;
-import io.github.patternknife.pxb.domain.file.service.ExcelGroupTaskFileService;
-
+import io.github.patternknife.pxb.config.response.error.exception.data.TaskAlreadyInProgressException;
 import io.github.patternknife.pxb.domain.exceldbprocessor.factory.IExcelDBProcessorFactory;
 import io.github.patternknife.pxb.domain.exceldbprocessor.maxid.ExcelDBMaxIdRes;
 import io.github.patternknife.pxb.domain.exceldbprocessor.processor.ExcelDBProcessor;
@@ -26,6 +23,7 @@ import io.github.patternknife.pxb.domain.excelgrouptask.dao.ExcelGroupTaskReposi
 import io.github.patternknife.pxb.domain.excelgrouptask.dto.ExcelGroupTaskReqDTO;
 import io.github.patternknife.pxb.domain.excelgrouptask.dto.ExcelGroupTaskResDTO;
 import io.github.patternknife.pxb.domain.excelgrouptask.entity.ExcelGroupTask;
+import io.github.patternknife.pxb.domain.file.service.ExcelGroupTaskFileService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -75,14 +73,14 @@ public class ExcelGroupTaskService {
         try {
 
             if (!excelGroupTaskRepositorySupport.setExcelGroupTaskStatusInProgress(id)) {
-                throw new AlreadyInProgressException("The group process has already started or is being modified. (EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("The group process has already started or is being modified. (EXCEL GROUP TASK ID : " + id + ")");
             }
 
             if (excelDBWriteTaskRepository.existsByGroupIdAndStatusIn(id,
                     Arrays.asList(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.STANDBY.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(), ExcelDBWriteTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))) {
-                throw new AlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
             }
 
 
@@ -104,26 +102,26 @@ public class ExcelGroupTaskService {
                                                                        String excelGroupTaskSearchFilter,
                                                                        String sorterValueFilter,
                                                                        String dateRangeFilter)
-            throws ResourceNotFoundException, JsonProcessingException {
+            throws JsonProcessingException {
 
         return excelGroupTaskRepositorySupport.findExcelDBWriteGroupTasksByPageFilter(skipPagination, pageNum,pageSize,
                 excelGroupTaskSearchFilter, sorterValueFilter, dateRangeFilter);
 
     }
 
-    public Boolean deleteExcelDBWriteGroupTask(Long id) throws IOException {
+    public Boolean deleteExcelDBWriteGroupTask(Long id) {
 
         try {
 
             if (!excelGroupTaskRepositorySupport.setExcelGroupTaskStatusInProgress(id)) {
-                throw new AlreadyInProgressException("The group process has already started or is being modified.(EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("The group process has already started or is being modified.(EXCEL GROUP TASK ID : " + id + ")");
             }
 
             if (excelDBWriteTaskRepository.existsByGroupIdAndStatusIn(id,
                     Arrays.asList(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.STANDBY.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(), ExcelDBWriteTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))) {
-                throw new AlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
             }
 
             excelDBWriteTaskRepository.deleteByGroupId(id);
@@ -153,7 +151,7 @@ public class ExcelGroupTaskService {
         try {
 
             if (!excelGroupTaskRepositorySupport.setExcelGroupTaskStatusInProgress(dto.getId())) {
-                throw new AlreadyInProgressException("The group process has already started or is being modified.(EXCEL GROUP TASK ID : " + dto.getId() + ")");
+                throw new TaskAlreadyInProgressException("The group process has already started or is being modified.(EXCEL GROUP TASK ID : " + dto.getId() + ")");
             }
 
             if(excelDBWriteTaskRepository.existsByGroupIdAndStatusIn(dto.getId(),
@@ -161,7 +159,7 @@ public class ExcelGroupTaskService {
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))){
-                throw new AlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + dto.getId() + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + dto.getId() + ")");
             }
 
 
@@ -246,26 +244,26 @@ public class ExcelGroupTaskService {
                                                                       String excelGroupTaskSearchFilter,
                                                                       String sorterValueFilter,
                                                                       String dateRangeFilter)
-            throws ResourceNotFoundException, JsonProcessingException {
+            throws JsonProcessingException {
 
         return excelGroupTaskRepositorySupport.findExcelDBReadGroupTasksByPageAndFilter(skipPagination, pageNum,pageSize,
                 excelGroupTaskSearchFilter, sorterValueFilter, dateRangeFilter);
 
     }
 
-    public Boolean deleteExcelDBReadGroupTask(Long id) throws IOException {
+    public Boolean deleteExcelDBReadGroupTask(Long id) {
 
         try {
 
             if (!excelGroupTaskRepositorySupport.setExcelGroupTaskStatusInProgress(id)) {
-                throw new AlreadyInProgressException("The group process has already started or is being modified.(EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("The group process has already started or is being modified.(EXCEL GROUP TASK ID : " + id + ")");
             }
 
             if (excelDBReadTaskRepository.existsByGroupIdAndStatusIn(id,
                     Arrays.asList(ExcelDBReadTaskEventDomain.ExcelTaskStatus.STANDBY.getValue(),
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(), ExcelDBReadTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))) {
-                throw new AlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
             }
 
 
@@ -292,7 +290,7 @@ public class ExcelGroupTaskService {
         try {
 
             if (!excelGroupTaskRepositorySupport.setExcelGroupTaskStatusInProgress(dto.getId())) {
-                throw new AlreadyInProgressException("The group process has already started or is being modified.(EXCEL GROUP TASK ID : " + dto.getId() + ")");
+                throw new TaskAlreadyInProgressException("The group process has already started or is being modified.(EXCEL GROUP TASK ID : " + dto.getId() + ")");
             }
 
             if(excelDBReadTaskRepository.existsByGroupIdAndStatusIn(dto.getId(),
@@ -300,7 +298,7 @@ public class ExcelGroupTaskService {
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(),
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))){
-                throw new AlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + dto.getId() + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + dto.getId() + ")");
             }
 
             // Delete all existing tasks of the singleton

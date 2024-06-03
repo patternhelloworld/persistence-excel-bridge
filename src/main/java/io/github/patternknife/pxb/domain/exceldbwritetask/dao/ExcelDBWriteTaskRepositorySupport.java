@@ -2,7 +2,10 @@ package io.github.patternknife.pxb.domain.exceldbwritetask.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.patternknife.pxb.config.response.error.exception.data.ResourceNotFoundException;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.github.patternknife.pxb.config.response.error.exception.data.ExcelDBWriteTaskNotFoundException;
 import io.github.patternknife.pxb.domain.common.dto.DateRangeFilter;
 import io.github.patternknife.pxb.domain.common.dto.SorterValueFilter;
 import io.github.patternknife.pxb.domain.excelcommontask.dto.ExcelCommonTaskResDTO;
@@ -14,9 +17,6 @@ import io.github.patternknife.pxb.domain.exceldbwritetask.entity.QExcelDBWriteTa
 import io.github.patternknife.pxb.domain.exceldbwritetask.queue.ExcelDBWriteTaskEventDomain;
 import io.github.patternknife.pxb.util.CustomUtils;
 import io.github.patternknife.pxb.util.PaginationUtil;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -42,8 +42,8 @@ public class ExcelDBWriteTaskRepositorySupport extends QuerydslRepositorySupport
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
-    public ExcelDBWriteTask findById(Long id) throws ResourceNotFoundException {
-        return excelDBWriteTaskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("NOT found Excel Group ID :: " + id));
+    public ExcelDBWriteTask findById(Long id) throws ExcelDBWriteTaskNotFoundException {
+        return excelDBWriteTaskRepository.findById(id).orElseThrow(() -> new ExcelDBWriteTaskNotFoundException("NOT found Excel Group ID :: " + id));
     }
 
     @Transactional
@@ -53,9 +53,9 @@ public class ExcelDBWriteTaskRepositorySupport extends QuerydslRepositorySupport
     }
 
     @Transactional
-    public ExcelDBWriteTask update(ExcelDBWriteTaskEventDomain excelTaskEventDomain) {
+    public ExcelDBWriteTask update(ExcelDBWriteTaskEventDomain excelTaskEventDomain) throws ExcelDBWriteTaskNotFoundException {
         return excelDBWriteTaskRepository.findById(excelTaskEventDomain.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("id (" + excelTaskEventDomain.getId() + ") NOT found."))
+                .orElseThrow(() -> new ExcelDBWriteTaskNotFoundException("id (" + excelTaskEventDomain.getId() + ") NOT found."))
                 .update(excelTaskEventDomain);
     }
 
@@ -66,7 +66,7 @@ public class ExcelDBWriteTaskRepositorySupport extends QuerydslRepositorySupport
                                                                                              Integer pageSize,
                                                                                              String excelDBWriteTaskSearchFilter,
                                                                                              String sorterValueFilter,
-                                                                                             String dateRangeFilter, Long groupId) throws JsonProcessingException, ResourceNotFoundException {
+                                                                                             String dateRangeFilter, Long groupId) throws JsonProcessingException {
 
         final QExcelDBWriteTask qExcelDBWriteTask = QExcelDBWriteTask.excelDBWriteTask;
 
@@ -182,7 +182,7 @@ public class ExcelDBWriteTaskRepositorySupport extends QuerydslRepositorySupport
 
 
     @Transactional( readOnly = true)
-    public ExcelCommonTaskResDTO.StatusRes findExcelDBWriteTaskCountsByStatus(Long groupId) throws ResourceNotFoundException {
+    public ExcelCommonTaskResDTO.StatusRes findExcelDBWriteTaskCountsByStatus(Long groupId) {
         return new ExcelCommonTaskResDTO.StatusRes(
                 excelDBWriteTaskRepository.countByStatusAndGroupId(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.SUCCESS.getValue(), groupId),
                 excelDBWriteTaskRepository.countByStatusAndGroupId(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.FAILURE.getValue(), groupId),

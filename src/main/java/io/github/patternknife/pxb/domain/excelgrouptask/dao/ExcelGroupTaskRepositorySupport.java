@@ -2,7 +2,10 @@ package io.github.patternknife.pxb.domain.excelgrouptask.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.patternknife.pxb.config.response.error.exception.data.ResourceNotFoundException;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.github.patternknife.pxb.config.response.error.exception.data.ExcelGroupTaskNotFoundException;
 import io.github.patternknife.pxb.domain.common.dto.DateRangeFilter;
 import io.github.patternknife.pxb.domain.common.dto.SorterValueFilter;
 import io.github.patternknife.pxb.domain.excelgrouptask.cache.PxbInMemoryExcelGroupTaskIds;
@@ -16,9 +19,6 @@ import io.github.patternknife.pxb.domain.excelgrouptask.enums.ExcelGroupTaskStat
 import io.github.patternknife.pxb.domain.file.bo.ExcelGroupTaskFileBO;
 import io.github.patternknife.pxb.util.CustomUtils;
 import io.github.patternknife.pxb.util.PaginationUtil;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -47,8 +47,8 @@ public class ExcelGroupTaskRepositorySupport extends QuerydslRepositorySupport {
     }
 
 
-    public ExcelGroupTask findById(Long id) throws ResourceNotFoundException {
-        return excelGroupTaskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cannot find the following Excel Group ID: " + id));
+    public ExcelGroupTask findById(Long id) throws ExcelGroupTaskNotFoundException {
+        return excelGroupTaskRepository.findById(id).orElseThrow(() -> new ExcelGroupTaskNotFoundException("Cannot find the following Excel Group ID: " + id));
     }
 
 
@@ -100,7 +100,7 @@ public class ExcelGroupTaskRepositorySupport extends QuerydslRepositorySupport {
                                                                                     Integer pageSize,
                                                                                     String excelGroupTaskSearchFilter,
                                                                                     String sorterValueFilter,
-                                                                                    String dateRangeFilter) throws JsonProcessingException, ResourceNotFoundException {
+                                                                                    String dateRangeFilter) throws JsonProcessingException {
 
         final QExcelGroupTask qExcelGroupTask = QExcelGroupTask.excelGroupTask;
 
@@ -207,7 +207,7 @@ public class ExcelGroupTaskRepositorySupport extends QuerydslRepositorySupport {
                                                                                       Integer pageSize,
                                                                                       String excelGroupTaskSearchFilter,
                                                                                       String sorterValueFilter,
-                                                                                      String dateRangeFilter) throws JsonProcessingException, ResourceNotFoundException {
+                                                                                      String dateRangeFilter) throws JsonProcessingException {
 
         final QExcelGroupTask qExcelGroupTask = QExcelGroupTask.excelGroupTask;
 
@@ -336,8 +336,7 @@ public class ExcelGroupTaskRepositorySupport extends QuerydslRepositorySupport {
 
     public ExcelGroupTaskResDTO.CreateOrUpdateRes update(Long id, ExcelGroupTaskReqDTO.UpdateStatusReq dto) {
 
-
-        final ExcelGroupTask excelGroupTask = excelGroupTaskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("ExcelGroupTask for '" + id + "' not found."));
+        final ExcelGroupTask excelGroupTask = excelGroupTaskRepository.findById(id).orElseThrow(() -> new ExcelGroupTaskNotFoundException("ExcelGroupTask for '" + id + "' not found."));
 
         excelGroupTask.updateStatus(dto);
 

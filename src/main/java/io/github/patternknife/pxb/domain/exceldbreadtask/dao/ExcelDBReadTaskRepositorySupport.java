@@ -2,7 +2,10 @@ package io.github.patternknife.pxb.domain.exceldbreadtask.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.patternknife.pxb.config.response.error.exception.data.ResourceNotFoundException;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.github.patternknife.pxb.config.response.error.exception.data.ExcelDBReadTaskNotFoundException;
 import io.github.patternknife.pxb.domain.common.dto.DateRangeFilter;
 import io.github.patternknife.pxb.domain.common.dto.SorterValueFilter;
 import io.github.patternknife.pxb.domain.excelcommontask.dto.ExcelCommonTaskResDTO;
@@ -15,9 +18,6 @@ import io.github.patternknife.pxb.domain.exceldbreadtask.queue.ExcelDBReadTaskEv
 import io.github.patternknife.pxb.domain.exceldbwritetask.queue.ExcelDBWriteTaskEventDomain;
 import io.github.patternknife.pxb.util.CustomUtils;
 import io.github.patternknife.pxb.util.PaginationUtil;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.JPQLQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -43,8 +43,8 @@ public class ExcelDBReadTaskRepositorySupport extends QuerydslRepositorySupport 
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
-    public ExcelDBReadTask findById(Long id) throws ResourceNotFoundException {
-        return excelDBReadTaskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Excel Group ID Not Found. :: " + id));
+    public ExcelDBReadTask findById(Long id) throws ExcelDBReadTaskNotFoundException {
+        return excelDBReadTaskRepository.findById(id).orElseThrow(() -> new ExcelDBReadTaskNotFoundException("Excel Group ID Not Found. :: " + id));
     }
 
     @Transactional
@@ -56,7 +56,7 @@ public class ExcelDBReadTaskRepositorySupport extends QuerydslRepositorySupport 
     @Transactional
     public ExcelDBReadTask update(ExcelDBReadTaskEventDomain excelTaskEventDomain) {
         return excelDBReadTaskRepository.findById(excelTaskEventDomain.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("id (" + excelTaskEventDomain.getId() + ") NOT found."))
+                .orElseThrow(() -> new ExcelDBReadTaskNotFoundException("id (" + excelTaskEventDomain.getId() + ") NOT found."))
                 .update(excelTaskEventDomain);
     }
 
@@ -67,7 +67,7 @@ public class ExcelDBReadTaskRepositorySupport extends QuerydslRepositorySupport 
                                                                    Integer pageSize,
                                                                    String excelDBReadTaskSearchFilter,
                                                                    String sorterValueFilter,
-                                                                   String dateRangeFilter, Long groupId) throws JsonProcessingException, ResourceNotFoundException {
+                                                                   String dateRangeFilter, Long groupId) throws JsonProcessingException {
 
         final QExcelDBReadTask qExcelDBReadTask = QExcelDBReadTask.excelDBReadTask;
 
@@ -183,7 +183,7 @@ public class ExcelDBReadTaskRepositorySupport extends QuerydslRepositorySupport 
 
 
     @Transactional( readOnly = true)
-    public ExcelCommonTaskResDTO.StatusRes findExcelDBReadTaskCountsByStatus(Long groupId) throws ResourceNotFoundException {
+    public ExcelCommonTaskResDTO.StatusRes findExcelDBReadTaskCountsByStatus(Long groupId) {
         return new ExcelCommonTaskResDTO.StatusRes(
                 excelDBReadTaskRepository.countByStatusAndGroupId(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.SUCCESS.getValue(), groupId),
                 excelDBReadTaskRepository.countByStatusAndGroupId(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.FAILURE.getValue(), groupId),

@@ -20,6 +20,8 @@ public class PxbInMemoryExcelGroupTaskIds {
     private List<Long> readTaskGroupIds = new ArrayList<>();
     private List<Long> writeTaskGroupIds = new ArrayList<>();
 
+    private Boolean initializationCalled = false;
+
     private PxbInMemoryExcelGroupTaskIds() {
     }
 
@@ -31,6 +33,8 @@ public class PxbInMemoryExcelGroupTaskIds {
     }
 
     public void initializeIds(ExcelGroupTaskRepository repository) {
+
+        initializationCalled = true;
 
         List<ExcelGroupTask> tasks;
 
@@ -58,10 +62,16 @@ public class PxbInMemoryExcelGroupTaskIds {
     }
 
     public List<Long> getReadTaskGroupIds() {
+        if(!initializationCalled) {
+            logger.error("Initialization has NOT been called even once.");
+        }
         return readTaskGroupIds;
     }
 
     public List<Long> getWriteTaskGroupIds() {
+        if(!initializationCalled) {
+            logger.error("Initialization has NOT been called even once.");
+        }
         return writeTaskGroupIds;
     }
 }

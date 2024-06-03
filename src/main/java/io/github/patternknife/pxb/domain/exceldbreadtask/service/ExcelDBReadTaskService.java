@@ -1,8 +1,6 @@
 package io.github.patternknife.pxb.domain.exceldbreadtask.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.patternknife.pxb.config.response.error.exception.data.ResourceNotFoundException;
-
 import io.github.patternknife.pxb.domain.excelcommontask.dto.ExcelCommonTaskResDTO;
 import io.github.patternknife.pxb.domain.exceldbreadtask.dao.ExcelDBReadTaskRepositorySupport;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,7 @@ public class ExcelDBReadTaskService {
                                                                    Integer pageSize,
                                                                    String excelDBReadTaskSearchFilter,
                                                                    String sorterValueFilter,
-                                                                   String dateRangeFilter, Long groupId) throws JsonProcessingException, ResourceNotFoundException {
+                                                                   String dateRangeFilter, Long groupId) throws JsonProcessingException {
 
         return excelDBReadTaskRepositorySupport.findExcelDBReadTasks(skipPagination, pageNum, pageSize, excelDBReadTaskSearchFilter, sorterValueFilter, dateRangeFilter, groupId);
 
