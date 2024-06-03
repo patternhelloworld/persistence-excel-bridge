@@ -66,7 +66,7 @@ public class ExcelGroupTaskService {
     }
 
     @Transactional( rollbackFor=Exception.class)
-    public ExcelGroupTaskResDTO.CreateOrUpdateRes updateExcelGroupTask(@NotNull Long id, @NotNull ExcelGroupTaskReqDTO.UpdateReq dto) {
+    public ExcelGroupTaskResDTO.CreateOrUpdateRes updateExcelGroupTask(@NotNull Long id, @NotNull ExcelGroupTaskReqDTO.UpdateReq dto) throws TaskAlreadyInProgressException {
 
         ExcelGroupTask excelGroupTask = null;
 
@@ -80,7 +80,7 @@ public class ExcelGroupTaskService {
                     Arrays.asList(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.STANDBY.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(), ExcelDBWriteTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))) {
-                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the group process. (EXCEL GROUP TASK ID : " + id + ")");
             }
 
 
@@ -109,7 +109,7 @@ public class ExcelGroupTaskService {
 
     }
 
-    public Boolean deleteExcelDBWriteGroupTask(Long id) {
+    public Boolean deleteExcelDBWriteGroupTask(Long id) throws TaskAlreadyInProgressException {
 
         try {
 
@@ -121,7 +121,7 @@ public class ExcelGroupTaskService {
                     Arrays.asList(ExcelDBWriteTaskEventDomain.ExcelTaskStatus.STANDBY.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(), ExcelDBWriteTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))) {
-                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the group process. (EXCEL GROUP TASK ID : " + id + ")");
             }
 
             excelDBWriteTaskRepository.deleteByGroupId(id);
@@ -141,7 +141,7 @@ public class ExcelGroupTaskService {
     /*
      *   This includes an asynchronous process. @Transactional was intentionally excluded to allow immediate DB updates.
      * */
-    public ExcelGroupTaskResDTO.CreateOrUpdateRes createExcelDBWriteGroupTask(ExcelGroupTaskReqDTO.DBWriteGroupTaskCreateReq dto) throws IOException {
+    public ExcelGroupTaskResDTO.CreateOrUpdateRes createExcelDBWriteGroupTask(ExcelGroupTaskReqDTO.DBWriteGroupTaskCreateReq dto) throws IOException, TaskAlreadyInProgressException {
 
         ExcelGroupTask excelGroupTask = null;
         Workbook workbook = null;
@@ -159,7 +159,7 @@ public class ExcelGroupTaskService {
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(),
                             ExcelDBWriteTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))){
-                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + dto.getId() + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the group process. (EXCEL GROUP TASK ID : " + dto.getId() + ")");
             }
 
 
@@ -251,7 +251,7 @@ public class ExcelGroupTaskService {
 
     }
 
-    public Boolean deleteExcelDBReadGroupTask(Long id) {
+    public Boolean deleteExcelDBReadGroupTask(Long id) throws TaskAlreadyInProgressException {
 
         try {
 
@@ -263,7 +263,7 @@ public class ExcelGroupTaskService {
                     Arrays.asList(ExcelDBReadTaskEventDomain.ExcelTaskStatus.STANDBY.getValue(),
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(), ExcelDBReadTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))) {
-                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + id + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the group process. (EXCEL GROUP TASK ID : " + id + ")");
             }
 
 
@@ -283,7 +283,8 @@ public class ExcelGroupTaskService {
     /*
      *   This includes an asynchronous process. @Transactional was intentionally excluded to allow immediate DB updates
      * */
-    public ExcelGroupTaskResDTO.CreateOrUpdateRes createExcelDBReadGroupTask(ExcelGroupTaskReqDTO.DBReadGroupTaskCreateReq dto) throws Exception {
+    public ExcelGroupTaskResDTO.CreateOrUpdateRes createExcelDBReadGroupTask(ExcelGroupTaskReqDTO.DBReadGroupTaskCreateReq dto)
+            throws IOException, TaskAlreadyInProgressException {
 
         ExcelGroupTask excelGroupTask = excelGroupTaskRepositorySupport.findById(dto.getId());;
 
@@ -298,7 +299,7 @@ public class ExcelGroupTaskService {
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.QUEUE_WAIT.getValue(),
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.QUEUE.getValue(),
                             ExcelDBReadTaskEventDomain.ExcelTaskStatus.PROGRESS.getValue()))){
-                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the hospital group process. (EXCEL GROUP TASK ID : " + dto.getId() + ")");
+                throw new TaskAlreadyInProgressException("There are incomplete tasks among the background individual processes of the group process. (EXCEL GROUP TASK ID : " + dto.getId() + ")");
             }
 
             // Delete all existing tasks of the singleton

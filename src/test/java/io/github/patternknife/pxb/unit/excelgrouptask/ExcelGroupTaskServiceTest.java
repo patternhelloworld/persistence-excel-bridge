@@ -102,7 +102,7 @@ public class ExcelGroupTaskServiceTest {
     }
 
     @Test
-    public void testUpdateExcelGroupTask() throws Exception {
+    public void testUpdateExcelGroupTask() {
 
         when(excelGroupTaskRepositorySupport.setExcelGroupTaskStatusInProgress(anyLong())).thenReturn(true);
         when(excelDBWriteTaskRepository.existsByGroupIdAndStatusIn(anyLong(), anyList())).thenReturn(false);
@@ -132,7 +132,7 @@ public class ExcelGroupTaskServiceTest {
     }
 
     @Test
-    public void testDeleteExcelDBWriteGroupTask() throws IOException {
+    public void testDeleteExcelDBWriteGroupTask() {
         when(excelGroupTaskRepositorySupport.setExcelGroupTaskStatusInProgress(anyLong())).thenReturn(true);
         when(excelDBWriteTaskRepository.existsByGroupIdAndStatusIn(anyLong(), anyList())).thenReturn(false);
 
@@ -159,7 +159,7 @@ public class ExcelGroupTaskServiceTest {
     }
 
     @Test
-    public void testDeleteExcelDBReadGroupTask() throws IOException {
+    public void testDeleteExcelDBReadGroupTask() {
         when(excelGroupTaskRepositorySupport.setExcelGroupTaskStatusInProgress(anyLong())).thenReturn(true);
         when(excelDBReadTaskRepository.existsByGroupIdAndStatusIn(anyLong(), anyList())).thenReturn(false);
 

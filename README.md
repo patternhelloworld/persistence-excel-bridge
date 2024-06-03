@@ -139,7 +139,8 @@
  - ExcelGroupService (Common, Group, 8 Apis)
  - ExcelDBWriteService (Excel->DB, One, 3 Apis)
  - ExcelDBReadService (Excel<-DB, One, 3 Apis)
+ - ExcelGroupTaskFileService (Common, File IO, 4 Apis)
 - A "Group" consists of the range of rows to be inserted into DB or created in an Excel file. 
- - More information on the "rows" can be found in entities ``( ExcelGroupTask, ExcelDBWriteTask, ExcelDBReadTask )``
+ - More information on the "rows" can be found in entities ``( ExcelGroupTask, ExcelDBWriteTask, ExcelDBReadTask, ExcelGroupTaskFileService )``
 - The processing of a "Group" should be asynchronous, leave full logs, and be memory-efficient.
 - You can create your own front-end using the provided APIs.

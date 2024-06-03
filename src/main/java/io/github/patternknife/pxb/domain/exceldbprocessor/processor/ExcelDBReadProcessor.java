@@ -14,7 +14,7 @@ public interface ExcelDBReadProcessor extends ExcelDBProcessor {
     /*
     *  To get metadata such as maxId for "read"
     * */
-    Page<? extends ExcelDBMaxIdRes> snapshotDBRead(int pageSize) throws Exception;
+    Page<? extends ExcelDBMaxIdRes> snapshotDBRead(int pageSize);
 
     void cacheDBReadToInMemory(ExcelDBReadTaskEventDomain excelDBReadTaskEventDomain, IExcelDBReadInMemoryData excelDBReadInMemoryData) throws Exception;
 
